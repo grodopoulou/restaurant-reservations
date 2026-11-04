@@ -23,3 +23,9 @@ class Availability:
         if guest_count.value > self.reserved_seats:
             raise ValueError("Ο αριθμός των θέσεων που αποδεσμεύετε είναι μεγαλύτερος από αυτές που έχουν δεσμευτεί.")
         self.reserved_seats -= guest_count.value
+
+    def change_capacity(self, new_capacity: int) -> None:
+        if new_capacity < self.reserved_seats:
+            raise ValueError("Δεν μπορείτε να μειώσετε τη χωρητικότητα κάτω από τις δεσμευμένες θέσεις.")
+        self.capacity = new_capacity
+        

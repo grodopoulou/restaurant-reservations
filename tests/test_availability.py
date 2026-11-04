@@ -56,3 +56,38 @@ def test_rejects_availability_with_release_larger_than_reserve():
     with pytest.raises(ValueError):
         availability.release(GuestCount(15))
     assert availability.free_seats == 10
+
+
+def test_valid_increasing_capacity():
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability = Availability(slot, capacity=20)
+    availability.reserve(GuestCount(20))
+    availability.change_capacity(40)
+    assert availability.free_seats == 20
+
+
+def test_valid_decreasing_capacity():
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability = Availability(slot, capacity=20)
+    availability.reserve(GuestCount(5))
+    availability.change_capacity(10)
+    assert availability.free_seats == 5
+
+
+def test_rejects_new_capacity_smaller_than_reserve():
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability = Availability(slot, capacity=20)
+    availability.reserve(GuestCount(10))
+    with pytest.raises(ValueError):
+        availability.change_capacity(5)
+    assert availability.free_seats == 10
+
+
+def test_valid_new_capacity_equal_to_reserved_rejects_new_reserve():
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability = Availability(slot, capacity=20)
+    availability.reserve(GuestCount(10))
+    availability.change_capacity(10)
+    with pytest.raises(ValueError):
+        availability.reserve(GuestCount(5))
+    assert availability.free_seats == 0
