@@ -18,3 +18,8 @@ class Availability:
         if guest_count.value > self.free_seats:
             raise ValueError("Δεν υπάρχει διαθέσιμες θέσεις για τη κράτησή.")
         self.reserved_seats += guest_count.value
+
+    def release(self, guest_count: GuestCount) -> None:
+        if guest_count.value > self.reserved_seats:
+            raise ValueError("Ο αριθμός των θέσεων που αποδεσμεύετε είναι μεγαλύτερος από αυτές που έχουν δεσμευτεί.")
+        self.reserved_seats -= guest_count.value

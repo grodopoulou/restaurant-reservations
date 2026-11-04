@@ -31,3 +31,28 @@ def test_accepts_seats_availability_equals_reserved():
     availability = Availability(slot, capacity=10)
     availability.reserve(GuestCount(10))
     assert availability.free_seats == 0
+
+
+def test_valid_release():
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability = Availability(slot, capacity=20)
+    availability.reserve(GuestCount(10))
+    availability.release(GuestCount(10))
+    assert availability.free_seats == 20
+
+
+def test_valid_availability_with_release_smaller_than_reserve():
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability = Availability(slot, capacity=20)
+    availability.reserve(GuestCount(10))
+    availability.release(GuestCount(4))
+    assert availability.free_seats == 14
+
+
+def test_rejects_availability_with_release_larger_than_reserve():
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability = Availability(slot, capacity=20)
+    availability.reserve(GuestCount(10))
+    with pytest.raises(ValueError):
+        availability.release(GuestCount(15))
+    assert availability.free_seats == 10
