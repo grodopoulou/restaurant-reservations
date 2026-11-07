@@ -10,7 +10,8 @@ class ReservationStatus(Enum):
     """
         A class to represent the status of a reservation.
         ENUM because we have two values for the reservation status.
-        
+        CANCELLED,
+        CONFIRMED
     """
     CANCELLED = "Cancelled"
     CONFIRMED = "Confirmed"
@@ -26,8 +27,8 @@ class Reservation:
 
             Parameters:
             contact (ContactDetails): contact details of the reservation
-            guest (GuestCount): the number of guest for the reservation
-            arrival (ArrivalSlot): the arrival datetime
+            guest_count (GuestCount): the number of guest for the reservation
+            arrival_slot (ArrivalSlot): the arrival datetime
 
         """
         self.id = uuid4()
