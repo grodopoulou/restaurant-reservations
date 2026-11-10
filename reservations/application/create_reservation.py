@@ -6,6 +6,7 @@ from reservations.domain.contact_details import ContactDetails
 from reservations.domain.guest_count import GuestCount
 from reservations.domain.repositories import AvailabilityRepository, ReservationRepository
 from reservations.domain.reservation import Reservation
+from reservations.application.errors import SlotNotAvailableError
 
 
 class CreateReservation:
@@ -33,7 +34,7 @@ class CreateReservation:
         self._policy.check(arrival_slot, guest_count, now)
         availability = self._availability_repo.get(arrival_slot)
         if availability is None:
-            raise ValueError("Δεν υπάρχει διαθεσιμότητα για την ώρα που επιλέξατε.")
+            raise SlotNotAvailableError("Δεν υπάρχει διαθεσιμότητα για την ώρα που επιλέξατε.")
         availability.reserve(guest_count)
         self._availability_repo.save(availability)
         reservation = Reservation(contact, guest_count, arrival_slot)

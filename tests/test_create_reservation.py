@@ -1,4 +1,5 @@
 from datetime import datetime, time
+import pytest
 
 from reservations.domain.availability import Availability
 from reservations.domain.arrival_slot import ArrivalSlot
@@ -7,6 +8,8 @@ from reservations.domain.contact_details import ContactDetails
 from reservations.domain.guest_count import GuestCount
 from reservations.domain.booking_policy import BookingPolicy
 from reservations.application.create_reservation import CreateReservation
+from reservations.application.errors import SlotNotAvailableError
+from reservations.domain.errors import OnlineBookingNotAllowedError
 
 
 def test_create_reservation_successfully():
@@ -27,4 +30,53 @@ def test_create_reservation_successfully():
     assert availability_repo.get(slot).free_seats == 16
 
 
-    
+def test_rejects_if_there_is_not_availability():
+    """
+    Test that a request for a time without Availability is rejected.
+    """
+    availability_repo = InMemoryAvailabilityRepository()
+    reservation_repo = InMemoryReservationRepository()
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    policy = BookingPolicy(time(22, 0), time(20, 0), 20, "210 0099988")
+    use_case = CreateReservation(availability_repo, reservation_repo, policy)
+    contact = ContactDetails("Παπαδοπούλου", "Μαρία", "papadopoulou@example.com", "6979999999")
+    guest_count = GuestCount(4)
+    now = datetime(2026, 11, 10, 10, 0)
+    with pytest.raises(SlotNotAvailableError, match="διαθεσιμότητα"):
+        use_case.execute(contact, guest_count, slot, now)
+
+
+def test_rejects_more_guests_than_available_seats():
+    """
+    Test that a request for more guests than the number of guests are available is rejected.
+    """
+    availability_repo = InMemoryAvailabilityRepository()
+    reservation_repo = InMemoryReservationRepository()
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability_repo.save(Availability(slot, 10))
+    policy = BookingPolicy(time(22, 0), time(20, 0), 20, "210 0099988")
+    use_case = CreateReservation(availability_repo, reservation_repo, policy)
+    contact = ContactDetails("Παπαδοπούλου", "Μαρία", "papadopoulou@example.com", "6979999999")
+    guest_count = GuestCount(15)
+    now = datetime(2026, 11, 10, 10, 0)
+    with pytest.raises(ValueError, match="θέσεις"):
+        use_case.execute(contact, guest_count, slot, now)
+    assert availability_repo.get(slot).free_seats == 10
+
+
+def test_rejects_more_guests_than_max_guests_of_the_policy():
+    """
+    Test that a request for more guests than the number of guests in the booking policy is rejected.
+    """
+    availability_repo = InMemoryAvailabilityRepository()
+    reservation_repo = InMemoryReservationRepository()
+    slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
+    availability_repo.save(Availability(slot, 30))
+    policy = BookingPolicy(time(22, 0), time(20, 0), 10, "210 0099988")
+    use_case = CreateReservation(availability_repo, reservation_repo, policy)
+    contact = ContactDetails("Παπαδοπούλου", "Μαρία", "papadopoulou@example.com", "6979999999")
+    guest_count = GuestCount(15)
+    now = datetime(2026, 11, 10, 10, 0)
+    with pytest.raises(OnlineBookingNotAllowedError):
+        use_case.execute(contact, guest_count, slot, now)
+    assert availability_repo.get(slot).free_seats == 30
