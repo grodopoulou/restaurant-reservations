@@ -3,10 +3,7 @@ from datetime import datetime, time
 
 from reservations.domain.arrival_slot import ArrivalSlot
 from reservations.domain.guest_count import GuestCount
-
-
-class OnlineBookingNotAllowedError(Exception):
-    """Το αίτημα δεν επιτρέπεται για online κράτηση."""
+from reservations.domain.errors import OnlineBookingNotAllowedError
 
 
 @dataclass(frozen=True)

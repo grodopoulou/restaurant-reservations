@@ -2,7 +2,8 @@ import pytest
 from datetime import datetime, time
 from reservations.domain.arrival_slot import ArrivalSlot
 from reservations.domain.guest_count import GuestCount
-from reservations.domain.booking_policy import BookingPolicy, OnlineBookingNotAllowedError
+from reservations.domain.booking_policy import BookingPolicy
+from reservations.domain.errors import OnlineBookingNotAllowedError
 
 
 def my_policy():
