@@ -12,7 +12,8 @@ from reservations.application.errors import SlotNotAvailableError
 from reservations.domain.errors import OnlineBookingNotAllowedError
 
 
-def create_reservation():
+def request_data():
+    """ A function with request and policy data. """
     slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
     contact = ContactDetails(
         "Παπαδοπούλου",
@@ -31,7 +32,7 @@ def test_create_reservation_successfully():
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
-    contact, guest_count, slot, policy = create_reservation()
+    contact, guest_count, slot, policy = request_data()
     availability_repo.save(Availability(slot, 20))
     use_case = CreateReservation(availability_repo, reservation_repo, policy)
     now = datetime(2026, 11, 10, 10, 0)
@@ -46,7 +47,7 @@ def test_rejects_if_there_is_not_availability():
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
-    contact, guest_count, slot, policy = create_reservation()
+    contact, guest_count, slot, policy = request_data()
     use_case = CreateReservation(availability_repo, reservation_repo, policy)
     now = datetime(2026, 11, 10, 10, 0)
     with pytest.raises(SlotNotAvailableError, match="διαθεσιμότητα"):
@@ -59,7 +60,7 @@ def test_rejects_more_guests_than_available_seats():
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
-    contact, guest_count, slot, policy = create_reservation()
+    contact, guest_count, slot, policy = request_data()
     availability_repo.save(Availability(slot, 10))
     use_case = CreateReservation(availability_repo, reservation_repo, policy)
     guest_count = GuestCount(15)
@@ -75,7 +76,7 @@ def test_rejects_more_guests_than_max_guests_of_the_policy():
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
-    contact, guest_count, slot, policy = create_reservation()
+    contact, guest_count, slot, policy = request_data()
     availability_repo.save(Availability(slot, 30))
     new_policy = BookingPolicy(time(22, 0), time(20, 0), 10, "210 0099988")
     use_case = CreateReservation(availability_repo, reservation_repo, new_policy)

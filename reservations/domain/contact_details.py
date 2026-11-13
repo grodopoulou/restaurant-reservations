@@ -3,12 +3,33 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class ContactDetails:
+    """
+    A class that represents the Contact Details of the reservation.
+
+    Attributes:
+        surname (str): The last name of the reservation.
+        firstname (str): The first name of the reservation.
+        email(str): email of the reservation.
+        phone(str): phone number of the reservation.
+    """
     surname: str
     firstname: str
     email: str
     phone: str
 
     def __post_init__(self):
+        """
+        Initialize Contact Details of the reservation. Verify that the data meets the requirements. 
+        
+        Requirements:
+        The reservation must be made under a first and last name. The email address must be valid, and the phone number must consist of 10 digits.
+
+        Args:
+            surname (str): The last name of the reservation.
+            firstname (str): The first name of the reservation.
+            email(str): email of the reservation.
+            phone(str): phone number of the reservation.
+        """
         if not self.surname.strip() or not self.firstname.strip():
             raise ValueError ("Παρακαλώ συμπληρώστε το ονοματεπώνυμο της κράτησης.")
         if not self.email.strip():

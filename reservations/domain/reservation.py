@@ -23,9 +23,9 @@ class Reservation:
     """
     def __init__(self, contact: ContactDetails, guest_count: GuestCount, arrival_slot: ArrivalSlot):
         """
-            Initializes the reservation.
+        Initializes the reservation.
 
-            Parameters:
+        Parameters:
             contact (ContactDetails): contact details of the reservation
             guest_count (GuestCount): the number of guest for the reservation
             arrival_slot (ArrivalSlot): the arrival datetime
@@ -39,9 +39,9 @@ class Reservation:
 
     def cancel(self):
         """
-            Cancel a reservation if that is confirmed.
+        Cancel a reservation if that is confirmed.
 
-            Raises:
+        Raises:
             ValueError: If the reservation is cancelled because we can not cancel a cancelled reservation.
         """
         if self.status == ReservationStatus.CANCELLED:

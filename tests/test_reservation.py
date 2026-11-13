@@ -20,7 +20,7 @@ def test_new_reservation_is_confirmed():
 
 def test_a_reservation_to_be_cancelled():
     """
-        Test if we cancel a reservation the Reservation Status should be Cancelled.
+    Test if we cancel a reservation the Reservation Status should be Cancelled.
     """
     reservation = my_reservation()
     reservation.cancel()
@@ -29,8 +29,8 @@ def test_a_reservation_to_be_cancelled():
 
 def test_rejects_cancel_an_already_cancelled_reservation():
     """
-        Test a cancelled reservation should not be cancelled.
-        Raises ValueError.
+    Test a cancelled reservation should not be cancelled.
+    Raises ValueError.
     """
     reservation = my_reservation()
     reservation.cancel()
@@ -41,7 +41,7 @@ def test_rejects_cancel_an_already_cancelled_reservation():
 
 def test_id_must_be_unique():
     """
-        Test if two reservations with same details have two different ids.
+    Test if two reservations with same details have two different ids.
     """
     reservation1 = my_reservation()
     reservation2 = my_reservation()

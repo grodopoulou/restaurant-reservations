@@ -9,9 +9,9 @@ from reservations.domain.errors import OnlineBookingNotAllowedError
 @dataclass(frozen=True)
 class BookingPolicy:
     """
-        This class defines the booking policy.
+    This class defines the booking policy.
 
-        Parameters:
+    Parameters:
         last_online_arrival_time (time): latest arrival time for which online booking is accepted
         same_day_cutoff_time (time): the time until online reservations are accepted
         max_guest_count (int): maximum group size per online booking
@@ -24,9 +24,9 @@ class BookingPolicy:
 
     def check(self, arrival_slot: ArrivalSlot, guest_count: GuestCount, now: datetime):
         """
-            This function checks whether the reservation violates the rules defined by the admin.
+        This function checks whether the reservation violates the rules defined by the admin.
 
-            Rules:
+        Requirements:
             1. The arrival time could not be after the last_online_arrival_time.
             2. The reservation group could not be larger than max_guest_count.
             3. For same-day reservations, the current time cannot be after same_day_cutoff_time.

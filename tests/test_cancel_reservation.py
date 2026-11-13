@@ -15,6 +15,7 @@ from reservations.application.errors import SlotNotAvailableError, ReservationNo
 
 
 def request_data():
+    """ A function with request and policy data. """
     slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
     contact = ContactDetails(
         "Παπαδοπούλου",

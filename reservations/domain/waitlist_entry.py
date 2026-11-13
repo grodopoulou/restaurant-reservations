@@ -8,8 +8,8 @@ from uuid import uuid4
 
 class WaitlistStatus(Enum):
     """
-        A class to represent the status of the waiting list.
-        ENUM because we have three values for the status of the waiting list.
+    A class to represent the status of the waiting list.
+    ENUM because we have three values for the status of the waiting list.
         WAITING,
         PROMOTED,
         CANCELLED
@@ -21,13 +21,13 @@ class WaitlistStatus(Enum):
 
 class WaitlistEntry():
     """
-        Entity with a unique id.
+    Entity with a unique id.
     """
     def __init__(self, contact: ContactDetails, guest_count: GuestCount, arrival_slot: ArrivalSlot):
         """
-            Initializes the details of the waiting list.
+        Initializes the details of the waiting list.
         
-            Parameters are the same with the reservation:
+        Parameters are the same with the reservation:
             contact (ContactDetails): contact details of the reservation
             guest_count (GuestCount): the number of guest for the reservation
             arrival_slot (ArrivalSlot): the arrival datetime
@@ -41,10 +41,10 @@ class WaitlistEntry():
 
     def cancel(self):
         """
-            Cancel a reservation of the waiting list if the status is waiting.
+        Cancel a reservation of the waiting list if the status is waiting.
     
-            Raises:
-                ValueError: If the waiting status is not waiting.
+        Raises:
+            ValueError: If the waiting status is not waiting.
         """
         if self.status != WaitlistStatus.WAITING:
             raise ValueError("Η αίτηση αναμονής που ζητήσατε δεν μπορεί να ακυρωθεί.")
@@ -52,10 +52,10 @@ class WaitlistEntry():
 
     def promote(self):
         """
-            Promote a reservation of the waiting list if the status is waiting.
+        Promote a reservation of the waiting list if the status is waiting.
         
-            Raises:
-                ValueError: If the waiting status is not waiting.
+        Raises:
+            ValueError: If the waiting status is not waiting.
         """
         if self.status != WaitlistStatus.WAITING:
             raise ValueError("Η αίτηση αναμονή που ζητήσατε δεν μπορεί να γίνει κράτηση.")
