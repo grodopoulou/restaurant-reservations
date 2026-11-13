@@ -14,7 +14,7 @@ from reservations.application.cancel_reservation import CancelReservation
 from reservations.application.errors import SlotNotAvailableError, ReservationNotFoundError
 
 
-def create_reservation():
+def request_data():
     slot = ArrivalSlot(datetime(2026, 11, 14, 21, 0))
     contact = ContactDetails(
         "Παπαδοπούλου",
@@ -34,7 +34,7 @@ def test_cancel_reservation_successfully():
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
-    contact, guest_count, slot, policy, now = create_reservation()
+    contact, guest_count, slot, policy, now = request_data()
     availability_repo.save(Availability(slot, 20))
     new_reservation = CreateReservation(availability_repo, reservation_repo, policy)
     created_reservation = new_reservation.execute(contact, guest_count, slot, now)
@@ -61,7 +61,7 @@ def test_cancel_reservation_availability_not_found():
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
-    contact, guest_count, slot, policy, now = create_reservation()
+    contact, guest_count, slot, policy, now = request_data()
     reservation = Reservation(contact, guest_count, slot)
     reservation_repo.add(reservation)
     cancel_reservation = CancelReservation(reservation_repo, availability_repo)
@@ -77,7 +77,7 @@ def test_rejects_double_cancellation():
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
-    contact, guest_count, slot, policy, now = create_reservation()
+    contact, guest_count, slot, policy, now = request_data()
     availability_repo.save(Availability(slot, 20))
     new_reservation = CreateReservation(availability_repo, reservation_repo, policy)
     created_reservation = new_reservation.execute(contact, guest_count, slot, now)
@@ -87,3 +87,22 @@ def test_rejects_double_cancellation():
     with pytest.raises(ValueError, match="ακυρωμένη"):
         cancel_reservation.execute(created_reservation.id)
     assert availability_repo.get(slot).free_seats == 20
+
+
+def test_rejects_cancel_reservation_twice():
+    """
+    Test that cancelling an already cancelled reservation
+    raises ValueError and does not restore seats more than once.
+    """
+    availability_repo = InMemoryAvailabilityRepository()
+    reservation_repo = InMemoryReservationRepository()
+    contact, guest_count, slot, policy, now = request_data()
+    availability_repo.save(Availability(slot, 20))
+    new_reservation = CreateReservation(availability_repo, reservation_repo, policy)
+    created_reservation1 = new_reservation.execute(contact, guest_count, slot, now)
+    created_reservation2 = new_reservation.execute(contact, guest_count, slot, now)
+    cancel_reservation = CancelReservation(reservation_repo, availability_repo)
+    cancel_reservation.execute(created_reservation1.id)
+    with pytest.raises(ValueError, match="ακυρωμένη"):
+            cancel_reservation.execute(created_reservation1.id)
+    assert availability_repo.get(slot).free_seats == 16
