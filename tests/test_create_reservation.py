@@ -43,7 +43,7 @@ def test_create_reservation_successfully():
 
 def test_rejects_if_there_is_not_availability():
     """
-    Test that a request for a time without Availability is rejected.
+    Test that a request for a time without Availability raises a SlotNotAvailableError.
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
@@ -56,7 +56,7 @@ def test_rejects_if_there_is_not_availability():
 
 def test_rejects_more_guests_than_available_seats():
     """
-    Test that a request for more guests than the number of guests are available is rejected.
+    Test that a request for more guests than the number of guests are available raises ValueError, and the free seats does not change.
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()
@@ -72,7 +72,7 @@ def test_rejects_more_guests_than_available_seats():
 
 def test_rejects_more_guests_than_max_guests_of_the_policy():
     """
-    Test that a request for more guests than the number of guests in the booking policy is rejected.
+    Test that a request for more guests than the number of guests in the booking policy raises OnlineBookingNotAllowedError, and the free seats does not change.
     """
     availability_repo = InMemoryAvailabilityRepository()
     reservation_repo = InMemoryReservationRepository()

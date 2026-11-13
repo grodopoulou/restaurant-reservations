@@ -19,7 +19,7 @@ def test_new_waitlist_entry_is_waiting():
     assert waitlist_entry.status == WaitlistStatus.WAITING
 
 
-def test_a_waitlist_entry_to_be_cancelled():
+def test_cancel_waitlist_entry():
     """
     Test if we cancel a wait list entry the Waitlist Status should be Cancelled.
     """
@@ -28,7 +28,7 @@ def test_a_waitlist_entry_to_be_cancelled():
     assert waitlist_entry.status == WaitlistStatus.CANCELLED
 
 
-def test_a_waitlist_entry_to_be_promoted():
+def test_promote_waitlist_entry():
     """
     Test if we promote a wait list entry the Waitlist Status should be Promoted.
     """
@@ -39,8 +39,8 @@ def test_a_waitlist_entry_to_be_promoted():
 
 def test_rejects_cancel_an_already_cancelled_waitlist_entry():
     """
-    Test a cancelled wait list entry should not be cancelled.
-    Raises ValueError.
+    Test a cancelled wait list entry can not be cancelled.
+    Raises ValueError. The status of the waitlist entry should be Cancelled.
     """
     waitlist_entry = my_waitlist_entry()
     waitlist_entry.cancel()
@@ -52,7 +52,7 @@ def test_rejects_cancel_an_already_cancelled_waitlist_entry():
 def test_rejects_cancel_a_promoted_waitlist_entity():
     """
     Test a promoted wait list entry should not be cancelled.
-    Raises ValueError.
+    Raises ValueError. The status of the waitlist entry should be Promoted.
     """
     waitlist_entry = my_waitlist_entry()
     waitlist_entry.promote()
@@ -61,10 +61,10 @@ def test_rejects_cancel_a_promoted_waitlist_entity():
     assert waitlist_entry.status == WaitlistStatus.PROMOTED
 
 
-def test_rejects_promote_a_cancell_waitlist_entity():
+def test_rejects_promoting_a_cancelled_waitlist_entry():
     """
-    Test a cancelled wait list entry should not be promoted.
-    Raises ValueError.
+    Test that a cancelled wait list entry should not be promoted.
+    Raises ValueError. The status of the waitlist entry should be cancelled.
     """
     waitlist_entry = my_waitlist_entry()
     waitlist_entry.cancel()
