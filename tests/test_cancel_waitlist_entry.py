@@ -1,18 +1,14 @@
 from datetime import datetime, time
 import pytest
-from uuid import uuid4
 
 from reservations.infrastructure.in_memory import InMemoryWaitlistRepository, InMemoryAvailabilityRepository
 from reservations.domain.arrival_slot import ArrivalSlot
 from reservations.domain.contact_details import ContactDetails
 from reservations.domain.guest_count import GuestCount
-from reservations.domain.availability import Availability
 from reservations.domain.booking_policy import BookingPolicy
 from reservations.domain.waitlist_entry import WaitlistEntry, WaitlistStatus
-from reservations.application.join_waitlist import JoinWaitlist
 from reservations.application.cancel_waitlist_entry import CancelWaitlistEntry
 from reservations.application.errors import  WaitlistEntryNotFoundError
-
 
 
 def request_data():
