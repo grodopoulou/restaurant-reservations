@@ -105,5 +105,5 @@ def test_rejects_cancel_reservation_twice():
     cancel_reservation = CancelReservation(reservation_repo, availability_repo)
     cancel_reservation.execute(created_reservation1.id)
     with pytest.raises(ValueError, match="ακυρωμένη"):
-            cancel_reservation.execute(created_reservation1.id)
+        cancel_reservation.execute(created_reservation1.id)
     assert availability_repo.get(slot).free_seats == 16
