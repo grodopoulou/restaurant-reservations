@@ -4,3 +4,7 @@ class SlotNotAvailableError(Exception):
 
 class ReservationNotFoundError(Exception):
     """Custom Error when a reservation cannot be found."""
+
+
+class SeatsAvailableError(Exception):
+    """Custom Error when there are enough seats for reservation and do not need join to a waitlist entry."""
