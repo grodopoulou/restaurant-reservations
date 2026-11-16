@@ -22,7 +22,8 @@ class CancelReservation:
         4. Checks if there is availability.
         5. Cancel the booking.
         6. Release its reserved spots.
-        7. Save the availability.
+        7. Saves the reservation changes.
+        8. Save the availability.
         """
         reservation = self._reservation_repo.get(reservation_id)
         if reservation is None:
@@ -32,4 +33,5 @@ class CancelReservation:
             raise SlotNotAvailableError("Δεν υπάρχει διαθεσιμότητα για την κράτηση")
         reservation.cancel()
         available.release(reservation.guest_count)
+        self._reservation_repo.save(reservation)
         self._availability_repo.save(available)

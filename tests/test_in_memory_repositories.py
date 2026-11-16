@@ -5,10 +5,11 @@ import copy
 
 from reservations.domain.availability import Availability
 from reservations.domain.arrival_slot import ArrivalSlot
+from reservations.domain.errors import UnknownReservationError
 from reservations.infrastructure.in_memory import InMemoryAvailabilityRepository, InMemoryReservationRepository, InMemoryWaitlistRepository
 from reservations.domain.contact_details import ContactDetails
 from reservations.domain.guest_count import GuestCount
-from reservations.domain.reservation import Reservation
+from reservations.domain.reservation import Reservation, ReservationStatus
 from reservations.domain.waitlist_entry import WaitlistEntry
 
 
@@ -111,7 +112,7 @@ def test_get_all_waitlist_entries():
 
 
 
-def test_get_all_returns_empty_list():
+def test_no_waitlist_entries_to_get():
     """
     Test that get_all returns an empty list when there are no waitlist entries stored in the repository.
     """
@@ -121,8 +122,7 @@ def test_get_all_returns_empty_list():
 
 def test_save_existing_waitlist_entry():
     """
-    Test that save updates an existing waitlist entry
-    while preserving its ID.
+    Test that save updates an existing waitlist entry while preserving its ID.
     """
     repo = InMemoryWaitlistRepository()
     waitlist_entry = my_waitlist_entry()
@@ -142,3 +142,29 @@ def test_save_non_existing_waitlist_entry():
     waitlist_entry = my_waitlist_entry()
     with pytest.raises(ValueError):
         repo.save(waitlist_entry)
+
+
+def test_save_existing_reservation():
+    """ 
+    Test that save replaces an existing reservation with its updated version, keeping the same ID.
+    """
+    repo = InMemoryReservationRepository()
+    reserv = my_reservation()
+    repo.add(reserv)
+    new_reserv = copy.deepcopy(reserv)
+    new_reserv.cancel()
+    assert repo.get(reserv.id).status == ReservationStatus.CONFIRMED
+    repo.save(new_reserv)
+    assert repo.get(reserv.id).status == ReservationStatus.CANCELLED
+    assert reserv.id == repo.get(reserv.id).id
+
+
+def test_save_non_existing_reservation():
+    """ 
+    Test that if a non existing reservation is saved then an UnknownReservationError is raised and the repository stays empty.
+    """
+    repo = InMemoryReservationRepository()
+    reserv = my_reservation()
+    with pytest.raises(UnknownReservationError, match="κράτηση"):
+        repo.save(reserv)
+    assert repo.get(reserv.id) is None

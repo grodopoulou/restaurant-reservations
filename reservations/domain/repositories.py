@@ -40,6 +40,12 @@ class ReservationRepository(ABC):
         Returns the reservation, or None if it does not exist.
         """
 
+    @abstractmethod
+    def save(self, reservation: Reservation) -> None:
+        """
+        Saves the updated reservation. It does not return anything.
+        """
+
 
 class WaitlistRepository(ABC):
     """

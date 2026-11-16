@@ -5,6 +5,7 @@ from reservations.domain.availability import Availability
 from reservations.domain.arrival_slot import ArrivalSlot
 from reservations.domain.reservation import Reservation
 from reservations.domain.waitlist_entry import WaitlistEntry
+from reservations.domain.errors import UnknownReservationError
 
 
 class InMemoryAvailabilityRepository(AvailabilityRepository):
@@ -84,6 +85,20 @@ class InMemoryReservationRepository(ReservationRepository):
         The reservation for this unique id, or None if it does not exist.
         """
         return self._items.get(reservation_id)
+
+    def save(self, reservation: Reservation):
+        """
+        Saves the updated Reservation.
+            
+        Args:
+            reservation (Reservation): the changes of contact details, number of guests and arrival_slot information of the Reservation.
+            
+        Returns: 
+        Nothing
+        """
+        if reservation.id not in self._items:
+            raise UnknownReservationError("Η κράτηση δεν υπάρχει.")
+        self._items[reservation.id] = reservation
 
 
 class InMemoryWaitlistRepository(WaitlistRepository):

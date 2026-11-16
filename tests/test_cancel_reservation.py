@@ -1,6 +1,7 @@
 from datetime import datetime, time
 import pytest
-from uuid import uuid4
+from uuid import uuid4, UUID
+import copy
 
 from reservations.domain.availability import Availability
 from reservations.domain.arrival_slot import ArrivalSlot
@@ -12,6 +13,20 @@ from reservations.domain.booking_policy import BookingPolicy
 from reservations.application.create_reservation import CreateReservation
 from reservations.application.cancel_reservation import CancelReservation
 from reservations.application.errors import SlotNotAvailableError, ReservationNotFoundError
+
+
+class CopyReservationRepository(InMemoryReservationRepository):
+    def get(self, reservation_id: UUID) -> Reservation | None:
+        """
+        Gets the reservation of a unique id, and copy on get.
+    
+        Args:
+            reservation_id (UUID): unique id for a specific reservation.
+            
+        Returns:
+        Copies on get, so tests prove the use case calls save or None.
+        """
+        return copy.deepcopy(super().get(reservation_id))
 
 
 def request_data():
@@ -107,3 +122,19 @@ def test_rejects_cancel_reservation_twice():
     with pytest.raises(ValueError, match="ακυρωμένη"):
         cancel_reservation.execute(created_reservation1.id)
     assert availability_repo.get(slot).free_seats == 16
+
+
+def test_cancel_reservation_persists_the_cancellation():
+    """
+    Test that cancelling a reservation saves the cancelled status, so it is not lost when the repository returns copies.
+    """
+    availability_repo = InMemoryAvailabilityRepository()
+    reservation_repo = CopyReservationRepository()
+    contact, guest_count, slot, policy, now = request_data()
+    availability_repo.save(Availability(slot, 20))
+    new_reservation = CreateReservation(availability_repo, reservation_repo, policy)
+    created_reservation = new_reservation.execute(contact, guest_count, slot, now)
+    cancel_reservation = CancelReservation(reservation_repo, availability_repo)
+    cancel_reservation.execute(created_reservation.id)
+    assert reservation_repo.get(created_reservation.id).status == ReservationStatus.CANCELLED
+    assert availability_repo.get(slot).free_seats == 20
