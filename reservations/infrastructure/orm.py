@@ -23,7 +23,7 @@ class ReservationRecord(Base):
         arrival_slot (datetime): Date and time slot of the guest's arrival.
         status (str): Current state of the reservation ("confirmed" or "cancelled").
     """
-    __tablename__= "reservations"
+    __tablename__ = "reservations"
 
     id: Mapped[UUID] = mapped_column(
         Uuid,
@@ -49,7 +49,6 @@ class ReservationRecord(Base):
         String(10),
         nullable=False
     )
-    
 
     guest_count: Mapped[int] = mapped_column(
         Integer,
