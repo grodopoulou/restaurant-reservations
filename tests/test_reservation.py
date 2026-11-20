@@ -1,4 +1,5 @@
 import pytest
+from uuid import uuid4
 from datetime import datetime
 from reservations.domain.arrival_slot import ArrivalSlot
 from reservations.domain.guest_count import GuestCount
@@ -46,3 +47,18 @@ def test_id_must_be_unique():
     reservation1 = my_reservation()
     reservation2 = my_reservation()
     assert reservation1.id != reservation2.id
+
+
+def test_reservation_keeps_given_id_and_status():
+    """
+    Test that a Reservation can be rebuilt with existing id and status.
+    """
+    reservation = my_reservation()
+    reservation_id = uuid4()
+    reservation_status = ReservationStatus.CANCELLED
+    contact = reservation.contact
+    guest_count = reservation.guest_count
+    slot = reservation.arrival_slot
+    rebuild = Reservation(contact, guest_count, slot, id=reservation_id, status=reservation_status)
+    assert rebuild.id == reservation_id
+    assert rebuild.status == reservation_status
